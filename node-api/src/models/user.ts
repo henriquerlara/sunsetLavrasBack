@@ -43,13 +43,4 @@ User.init({
   modelName: 'User'
 });
 
-// Sincroniza o modelo com o banco de dados
-sequelize.sync()
-  .then(() => {
-    console.log('User table has been created.');
-  })
-  .catch((err) => {
-    console.error('Unable to create the table:', err);
-  });
-
 export default User;

@@ -27,6 +27,8 @@ app.use('/api', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/account', accountRoutes); // Rotas de conta
 
+app.use();
+
 sequelize.sync()
   .then(() => {
     console.log('Database connected and synchronized.');

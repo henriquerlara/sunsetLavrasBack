@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import bcrypt from 'bcryptjs';
 
 class Patrocinador extends Model {
   public id!: number;
@@ -15,27 +14,21 @@ Patrocinador.init({
     autoIncrement: true,
     primaryKey: true
   },
-  name: {
+  nome: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  email: {
+  descricao: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
   },
-  password: {
+  imagem: {
     type: DataTypes.STRING,
     allowNull: false
   }
 }, {
-  hooks: {
-    beforeCreate: (user: User) => {
-      user.password = bcrypt.hashSync(user.password, 10);
-    }
-  },
   sequelize,
-  modelName: 'User'
+  modelName: 'Patrocinador'
 });
 
 export default Patrocinador;
