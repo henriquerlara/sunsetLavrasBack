@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/auth';
 const router = Router();
 
 router.get('/', (req: Request, res: Response) => {
-  res.json({ user: req.session.user });
+  res.json({ user: req.session.usuario });
 });
 
 export default router;

@@ -9,6 +9,9 @@ import sequelize from './config/database';
 
 const app = express();
 
+// Middleware e rotas
+app.use(express.json());
+
 app.use(cors({
   origin: 'http://localhost:8080', // Endereço do frontend
   credentials: true // Permite o envio de cookies de sessão
@@ -27,7 +30,6 @@ app.use('/api', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/account', accountRoutes); // Rotas de conta
 
-app.use();
 
 sequelize.sync()
   .then(() => {
