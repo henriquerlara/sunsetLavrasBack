@@ -29,7 +29,7 @@ Patrocinador.init({
 }, {
   sequelize,
   modelName: 'Patrocinador',
-  tableName: 'patrocinador',
+  tableName: 'Patrocinador',
   schema: 'SunsetArena',
   timestamps: false // Desativa createdAt e updatedAt
 });

@@ -3,7 +3,7 @@ import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/account', (req: Request, res: Response) => {
   res.json({ user: req.session.usuario });
 });
 
