@@ -8,5 +8,4 @@ router.get('/patrocinadores', PatrocinadorController.getPatrocinadores);
 router.put('/patrocinadores/:id', PatrocinadorController.updatePatrocinador);
 router.delete('/patrocinadores/:id', PatrocinadorController.deletePatrocinador);
 
-
 export default router;

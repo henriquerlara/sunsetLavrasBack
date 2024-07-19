@@ -6,7 +6,11 @@ import Usuario from '../models/usuario';
 class ReservaController {
     createReserva = async (req: Request, res: Response) => {
         try {
-            const { idQuadra, idUsuario, dataHoraInicio, dataHoraFim } = req.body;
+            const { idQuadra, dataHoraInicio, dataHoraFim } = req.body;
+            if (!req.session || !req.session.usuario) {
+                return res.status(400).json({ error: 'Usuário não autenticado' });
+            }
+            let idUsuario = req.session.usuario.cpf;
             const newReserva = await Reserva.create({ idQuadra, idUsuario, dataHoraInicio, dataHoraFim });
             res.status(201).json(newReserva);
         } catch (error) {
@@ -34,27 +38,25 @@ class ReservaController {
     };
 
     updateReserva = async (req: Request, res: Response) => {
-        // try {
-        //     const { id } = req.params;
-        //     const { idQuadra, idUsuario, dataHoraInicio, dataHoraFim } = req.body;
-        //     const reserva = await Reserva.findByPk(id);
+        try {
+            const { id } = req.params;
+            const { data, cpfUsuario, idQuadra } = req.body;
+            const reserva = await Reserva.findByPk(id);
 
-        //     if (!reserva) {
-        //         res.status(404).json({ error: 'Reserva not found' });
-        //         return;
-        //     }
+            if (!reserva) {
+                res.status(404).json({ error: 'Reserva not found' });
+                return;
+            }
 
-        //     reserva.idQuadra = idQuadra;
-        //     reserva.idUsuario = idUsuario;
-        //     reserva.dataHoraInicio = dataHoraInicio;
-        //     reserva.dataHoraFim = dataHoraFim;
-        //     await reserva.save();
-
-        //     res.status(200).json(reserva);
-        // } catch (error) {
-        //     console.error('Error updating reserva:', error);
-        //     res.status(500).json({ error: 'Internal Server Error' });
-        // }
+            reserva.data = data;
+            reserva.cpfUsuario = cpfUsuario;
+            reserva.idQuadra = idQuadra;
+            await reserva.save();
+            res.status(200).json(reserva);
+        } catch (error) {
+            console.error('Error updating reserva:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     };
 
     deleteReserva = async (req: Request, res: Response) => {
