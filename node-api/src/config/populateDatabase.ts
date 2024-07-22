@@ -3,6 +3,7 @@ import Patrocinador from '../models/patrocinador';
 import Quadra from '../models/quadra';
 import Usuario from '../models/usuario';
 import Reserva from '../models/reserva';
+import Plano from '../models/plano';	
 
 const populateDatabase = async () => {
   try {
@@ -36,11 +37,20 @@ const populateDatabase = async () => {
       telefone: '(12) 93456-7890'
     });
 
+
+    const plano = await Plano.create({
+      nome: 'Plano Exemplo',
+      descricao: 'Descrição do plano',
+      preco: 100.00
+    });
+
     // Populando a tabela Reserva
     const reserva = await Reserva.create({
-      data: new Date(),
+      dataInicio: new Date(),
+      dataFim: new Date(),
+      idPlano: plano.id,
       cpfUsuario: usuario.cpf,
-      idQuadra: quadra.id
+      idQuadra: quadra.id,
     });
 
     console.log('Database populated with example data.');

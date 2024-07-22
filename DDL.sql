@@ -46,42 +46,29 @@ CREATE TABLE "SunsetArena"."Quadra" (
 );
 
 -- -----------------------------------------------------
--- Table SunsetArena.Aderencia
--- -----------------------------------------------------
-CREATE TABLE "SunsetArena"."Aderencia" (
-  "idAderencia" SERIAL PRIMARY KEY,
-  "idPlano" INT NOT NULL,
-  "cpfUsuario" CHAR(14) NOT NULL,
-  "dataInicio" DATE,
-  "dataFim" DATE,
-  CONSTRAINT "fk_Aderencia_Plano"
-    FOREIGN KEY ("idPlano")
-    REFERENCES "SunsetArena"."Plano" ("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT "fk_Aderencia_Usuario"
-    FOREIGN KEY ("cpfUsuario")
-    REFERENCES "SunsetArena"."Usuario" ("cpf")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION
-);
-
--- -----------------------------------------------------
 -- Table SunsetArena.Reserva
 -- -----------------------------------------------------
 CREATE TABLE "SunsetArena"."Reserva" (
   "id" SERIAL PRIMARY KEY,
-  "data" TIMESTAMP UNIQUE,
+  "idPlano" INT NOT NULL,
   "cpfUsuario" CHAR(14) NOT NULL,
+  "dataInicio" DATE,
+  "dataFim" DATE,
   "idQuadra" INT NOT NULL,
+  CONSTRAINT "fk_Reserva_Plano"
+    FOREIGN KEY ("idPlano")
+    REFERENCES "SunsetArena"."Plano" ("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
   CONSTRAINT "fk_Reserva_Usuario"
     FOREIGN KEY ("cpfUsuario")
     REFERENCES "SunsetArena"."Usuario" ("cpf")
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
+    ON UPDATE NO ACTION
   CONSTRAINT "fk_Reserva_Quadra"
     FOREIGN KEY ("idQuadra")
     REFERENCES "SunsetArena"."Quadra" ("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
+
