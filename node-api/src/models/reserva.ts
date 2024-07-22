@@ -18,47 +18,47 @@ Reserva.init(
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
-      primaryKey: true,
+      primaryKey: true
     },
     dataInicio: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: false
     },
     dataFim: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: false
     },
     idPlano: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Plano,
-        key: "id",
-      },
+        key: "id"
+      }
     },
     cpfUsuario: {
       type: DataTypes.CHAR(14),
       allowNull: false,
       references: {
         model: Usuario,
-        key: "cpf",
-      },
+        key: "cpf"
+      }
     },
     idQuadra: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Quadra,
-        key: "id",
-      },
-    },
+        key: "id"
+      }
+    }
   },
   {
     sequelize,
     modelName: "Reserva",
     tableName: "Reserva",
-    schema: "sunsetArena",
-    timestamps: false,
+    schema: "SunsetArena",
+    timestamps: false
   }
 );
 
@@ -67,7 +67,7 @@ Reserva.belongsTo(Plano, {
   targetKey: "id",
   as: "plano",
   onDelete: "NO ACTION",
-  onUpdate: "NO ACTION",
+  onUpdate: "NO ACTION"
 });
 
 Reserva.belongsTo(Usuario, {
@@ -75,7 +75,7 @@ Reserva.belongsTo(Usuario, {
   targetKey: "cpf",
   as: "usuario",
   onDelete: "CASCADE",
-  onUpdate: "NO ACTION",
+  onUpdate: "NO ACTION"
 });
 
 Reserva.belongsTo(Quadra, {
@@ -83,7 +83,7 @@ Reserva.belongsTo(Quadra, {
   targetKey: "id",
   as: "quadra",
   onDelete: "NO ACTION",
-  onUpdate: "NO ACTION",
+  onUpdate: "NO ACTION"
 });
 
 export default Reserva;

@@ -1,9 +1,10 @@
+import e from 'express';
 import sequelize from '../config/database';
 import Patrocinador from '../models/patrocinador';
+import Plano from '../models/plano';
 import Quadra from '../models/quadra';
-import Usuario from '../models/usuario';
 import Reserva from '../models/reserva';
-import Plano from '../models/plano';	
+import Usuario from '../models/usuario';
 
 const populateDatabase = async () => {
   try {
@@ -18,8 +19,15 @@ const populateDatabase = async () => {
     // Populando a tabela Patrocinador
     const patrocinador = await Patrocinador.create({
       nome: 'Patrocinador Exemplo',
-      descricao: 'Descrição do patrocinador',
-      imagem: 'https://example.com/image.jpg'
+      descricao: 'Descrição do patrocinador exemplo',
+      imagem: 'imagem_url_exemplo'
+    });
+
+    // Populando a tabela Plano
+    const plano = await Plano.create({
+      nome: 'Plano Exemplo',
+      descricao: 'Descrição do plano exemplo',
+      preco: 99.99
     });
 
     // Populando a tabela Quadra
@@ -34,23 +42,16 @@ const populateDatabase = async () => {
       nome: 'Usuario Exemplo',
       email: 'usuario@example.com',
       senha: 'senha123', // Senha será hasheada pelo hook beforeCreate
-      telefone: '(12) 93456-7890'
-    });
-
-
-    const plano = await Plano.create({
-      nome: 'Plano Exemplo',
-      descricao: 'Descrição do plano',
-      preco: 100.00
+      telefone: '1234567890'
     });
 
     // Populando a tabela Reserva
     const reserva = await Reserva.create({
       dataInicio: new Date(),
-      dataFim: new Date(),
+      dataFim: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hora depois
       idPlano: plano.id,
       cpfUsuario: usuario.cpf,
-      idQuadra: quadra.id,
+      idQuadra: quadra.id
     });
 
     console.log('Database populated with example data.');
@@ -60,3 +61,5 @@ const populateDatabase = async () => {
 };
 
 populateDatabase();
+
+export default populateDatabase;
