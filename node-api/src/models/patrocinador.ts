@@ -15,15 +15,15 @@ Patrocinador.init({
     primaryKey: true
   },
   nome: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(60),
     allowNull: false
   },
   descricao: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
   imagem: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(200),
     allowNull: false
   }
 }, {
