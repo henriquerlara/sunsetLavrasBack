@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authenticate } from '../middleware/auth';
+import { authenticate } from '../shared/middleware/auth';
 
 const router = Router();
 
