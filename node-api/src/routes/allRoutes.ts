@@ -6,6 +6,7 @@ import patrocinadorRoutes from './patrocinadorRoutes';
 import quadraRoutes from './quadraRoutes';
 import reservaRoutes from './reservaRoutes';
 import planoRoutes from './planoRoutes';
+import stripeRoutes from './stripeRoutes';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use(patrocinadorRoutes);
 router.use(quadraRoutes);
 router.use(reservaRoutes);
 router.use(planoRoutes);
+router.use('/stripe', stripeRoutes);
 
 export default router;
