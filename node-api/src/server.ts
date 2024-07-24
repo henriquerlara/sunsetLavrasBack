@@ -1,3 +1,8 @@
+<<<<<<< Updated upstream
+=======
+import 'dotenv/config';
+import './shared/services/translationsYup';
+>>>>>>> Stashed changes
 import app from './app';
 
 const PORT = process.env.PORT || 3000;
