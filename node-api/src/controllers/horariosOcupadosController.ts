@@ -11,11 +11,13 @@ interface HorarioOcupadoAttributes {
 
 const bodyValidation: yup.ObjectSchema<HorarioOcupadoAttributes> = yup.object().shape({
     data: yup.string()
-        .matches(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
-        .required(),
-    horario: yup.string().length(5).required(), // Formato HH:mm
+      .matches(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
+      .required(),
+    horario: yup.string()
+      .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Horário deve estar no formato HH:mm')
+      .required(),
     idQuadra: yup.number().required()
-});
+  });
 
 class HorarioOcupadoController {
     createHorarioOcupado = async (req: Request, res: Response) => {
