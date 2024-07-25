@@ -1,36 +1,8 @@
 import { Request, Response } from "express";
 import Patrocinador from "../models/patrocinador";
-import * as yup from "yup";
-
-interface PatrocinadorAttributes {
-    nome: string;
-    descricao: string;
-    imagem: string;
-}
-
-const bodyValidation: yup.ObjectSchema<PatrocinadorAttributes> = yup.object().shape({
-    nome: yup.string().required(),
-    descricao: yup.string().required(),
-    imagem: yup.string().required()
-});
 
 class PatrocinadorController {
     createPatrocinador = async (req: Request, res: Response) => {
-        let isValidBody: PatrocinadorAttributes | undefined = undefined;
-        try {
-            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-        } catch (err) {
-            const yupError = err as yup.ValidationError;
-            const ValidationErrors: Record<string, string> = {};
-
-            yupError.inner.forEach(error => {
-                if (error.path === undefined) return;
-                ValidationErrors[error.path] = error.message;
-            });
-
-            return res.status(400).json({ errors: ValidationErrors });
-        }
-
         try {
             const { nome, descricao, imagem } = req.body;
             const newPatrocinador = await Patrocinador.create({ nome, descricao, imagem });
@@ -44,10 +16,6 @@ class PatrocinadorController {
     deletePatrocinador = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            if (!id || isNaN(Number(id))) {
-                res.status(400).json({ error: 'ID is required or is not valid' });
-                return;
-            }
             const patrocinador = await Patrocinador.findByPk(id);
 
             if (!patrocinador) {
@@ -64,21 +32,6 @@ class PatrocinadorController {
     };
 
     updatePatrocinador = async (req: Request, res: Response) => {
-        let isValidBody: PatrocinadorAttributes | undefined = undefined;
-        try {
-            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-        } catch (err) {
-            const yupError = err as yup.ValidationError;
-            const ValidationErrors: Record<string, string> = {};
-
-            yupError.inner.forEach(error => {
-                if (error.path === undefined) return;
-                ValidationErrors[error.path] = error.message;
-            });
-
-            return res.status(400).json({ errors: ValidationErrors });
-        }
-
         try {
             const { id } = req.params;
             const { nome, descricao, imagem } = req.body;
@@ -98,7 +51,7 @@ class PatrocinadorController {
         } catch (error) {
             console.error("Error updating patrocinador:", error);
             res.status(500).json({ error: "Internal Server Error" });
-        }
+        }  
     };
 
     getPatrocinadores = async (req: Request, res: Response) => {
@@ -114,10 +67,6 @@ class PatrocinadorController {
     getPatrocinadorById = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            if (!id || isNaN(Number(id))) {
-                res.status(400).json({ error: 'ID is required or is not valid' });
-                return;
-            }
             const patrocinador = await Patrocinador.findByPk(id);
 
             if (!patrocinador) {
