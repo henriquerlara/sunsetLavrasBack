@@ -3,9 +3,41 @@ import Reserva from '../models/reserva';
 import Quadra from '../models/quadra';
 import Usuario from '../models/usuario';
 import Plano from '../models/plano';
+import * as yup from 'yup';
+
+interface ReservaAttributes {
+    dataInicio: Date;
+    dataFim: Date;
+    idPlano: number;
+    cpfUsuario: string;
+    idQuadra: number;
+}
+
+const bodyValidation: yup.ObjectSchema<ReservaAttributes> = yup.object().shape({
+    dataInicio: yup.date().required(),
+    dataFim: yup.date().required(),
+    idPlano: yup.number().required(),
+    cpfUsuario: yup.string().required(),
+    idQuadra: yup.number().required()
+});
 
 class ReservaController {
     createReserva = async (req: Request, res: Response) => {
+        let isValidBody: ReservaAttributes | undefined = undefined;
+        try {
+            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
+        } catch (err) {
+            const yupError = err as yup.ValidationError;
+            const ValidationErrors: Record<string, string> = {};
+
+            yupError.inner.forEach(error => {
+                if (error.path === undefined) return;
+                ValidationErrors[error.path] = error.message;
+            });
+
+            return res.status(400).json({ errors: ValidationErrors });
+        }
+
         try {
             const { dataInicio, dataFim, idPlano, cpfUsuario, idQuadra } = req.body;
             const newReserva = await Reserva.create({ dataInicio, dataFim, idPlano, cpfUsuario, idQuadra });
@@ -36,6 +68,21 @@ class ReservaController {
         }
     };
     updateReserva = async (req: Request, res: Response) => {
+        let isValidBody: ReservaAttributes | undefined = undefined;
+        try {
+            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
+        } catch (err) {
+            const yupError = err as yup.ValidationError;
+            const ValidationErrors: Record<string, string> = {};
+
+            yupError.inner.forEach(error => {
+                if (error.path === undefined) return;
+                ValidationErrors[error.path] = error.message;
+            });
+
+            return res.status(400).json({ errors: ValidationErrors });
+        }
+
         try {
             const { id } = req.params;
             const { dataInicio, dataFim, idPlano, cpfUsuario, idQuadra } = req.body;
@@ -62,6 +109,10 @@ class ReservaController {
     deleteReserva = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
+            if (!id || isNaN(Number(id))) {
+                res.status(400).json({ error: 'ID is required or is not valid' });
+                return;
+            }
             const reserva = await Reserva.findByPk(id);
 
             if (!reserva) {
