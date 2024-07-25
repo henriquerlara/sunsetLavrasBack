@@ -5,6 +5,7 @@ import Plano from '../models/plano';
 import Quadra from '../models/quadra';
 import Reserva from '../models/reserva';
 import Usuario from '../models/usuario';
+import HorariosOcupados from '../models/horariosOcupados';
 
 const populateDatabase = async () => {
   try {
@@ -51,6 +52,13 @@ const populateDatabase = async () => {
       dataFim: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hora depois
       idPlano: plano.id,
       cpfUsuario: usuario.cpf,
+      idQuadra: quadra.id
+    });
+
+    // Populando a tabela HorariosOcupados
+    const horariosOcupados = await HorariosOcupados.create({
+      data: '2021-12-31',
+      horario: '12:00',
       idQuadra: quadra.id
     });
 

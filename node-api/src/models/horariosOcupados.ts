@@ -1,10 +1,11 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
+import Quadra from './quadra';
 
 class HorariosOcupados extends Model {
   public id!: number;
-  public data!: string;
-  public horario!: string;
+  public data!: string; // Será armazenada como string no formato YYYY-MM-DD
+  public horario!: string; // Formato HH:mm
   public idQuadra!: number;
 }
 
@@ -15,7 +16,7 @@ HorariosOcupados.init({
     primaryKey: true
   },
   data: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.STRING(10),
     allowNull: false
   },
   horario: {
@@ -24,7 +25,11 @@ HorariosOcupados.init({
   },
   idQuadra: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Quadra,
+      key: "id"
+    }
   }
 }, {
   sequelize,
@@ -32,6 +37,14 @@ HorariosOcupados.init({
   tableName: 'HorariosOcupados',
   schema: 'SunsetArena',
   timestamps: false // Desativa createdAt e updatedAt
+});
+
+HorariosOcupados.belongsTo(Quadra, {
+    foreignKey: 'idQuadra',
+    targetKey: 'id',
+    as: 'quadra',
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION'
 });
 
 export default HorariosOcupados;
