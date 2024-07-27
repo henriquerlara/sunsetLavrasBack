@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import ReservaController from '../controllers/reservaController';
+import ReservaController, { reservaValidation } from '../controllers/reservaController';
 
 const router = Router();
 
-router.post('/reservas', ReservaController.createReserva);
+router.post('/reservas', reservaValidation, ReservaController.createReserva);
 router.get('/reservas', ReservaController.getReservas);
-router.put('/reservas/:id', ReservaController.updateReserva);
+router.put('/reservas/:id', reservaValidation, ReservaController.updateReserva);
 router.delete('/reservas/:id', ReservaController.deleteReserva);
 
 export default router;

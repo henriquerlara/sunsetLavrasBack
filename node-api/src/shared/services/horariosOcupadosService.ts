@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import horariosOcupados from "models/horariosOcupados";
+import HorariosOcupados from "models/horariosOcupados";
 
 class HorariosOcupadosService {
   getHorariosOcupados = async (req: Request, res: Response) => {
     try {
       const { data, idQuadra } = req.params;
-      const ocupados = await horariosOcupados.findAll({
+      const ocupados = await HorariosOcupados.findAll({
         where: {
           idQuadra,
           data
@@ -19,4 +19,6 @@ class HorariosOcupadosService {
       res.status(500).json({ error: "Internal Server Error" });
     }
   };
-}; export default new HorariosOcupadosService();
+}; 
+
+export default new HorariosOcupadosService();
