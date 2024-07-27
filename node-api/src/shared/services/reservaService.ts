@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Reserva from "models/reserva";
+import Reserva from "../../models/reserva";
 import { Op } from "sequelize";
 
 class reservaService {
