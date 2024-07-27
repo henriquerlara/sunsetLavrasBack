@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { createUser, getUsers } from "../controllers/usuarioController";
+import { createUser, getUsers, usuarioValidation } from "../controllers/usuarioController";
 import { authenticate } from "../shared/middleware/auth";
 
 declare global {
@@ -13,7 +13,7 @@ declare global {
 
 const router = Router();
 
-router.post("/users", createUser);
+router.post("/users", usuarioValidation, createUser);
 router.get("/users", getUsers);
 router.get("/users/logout", (req: Request, res: Response) => {
   req.logout();

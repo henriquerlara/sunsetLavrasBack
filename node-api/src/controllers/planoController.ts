@@ -1,36 +1,25 @@
-import { Request, Response } from 'express'
+import { Request, RequestHandler, Response } from 'express'
 import Plano from '../models/plano'
 import * as yup from 'yup'
+import { bodyValidator } from '../shared/middleware/validations'
 
 interface PlanoAttributes {
-  nome: string
-  descricao: string
-  preco: number
+  nome: string;
+  descricao: string;
+  preco: number;
 }
 
-const bodyValidation: yup.ObjectSchema<PlanoAttributes> = yup.object().shape({
-  nome: yup.string().required(),
-  descricao: yup.string().required(),
-  preco: yup.number().required()
-})
+export const planoValidation = bodyValidator((getSchema) => ({
+  body: getSchema<PlanoAttributes>(yup.object().shape({
+    nome: yup.string().required(),
+    descricao: yup.string().required(),
+    preco: yup.number().required()
+  }))
+}));
+
 
 class PlanoController {
   createPlano = async (req: Request, res: Response) => {
-    let isValidBody: PlanoAttributes | undefined = undefined;
-    try {
-      isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-    } catch (err) {
-      const yupError = err as yup.ValidationError;
-      const ValidationErrors: Record<string, string> = {};
-
-      yupError.inner.forEach(error => {
-        if (error.path === undefined) return;
-        ValidationErrors[error.path] = error.message;
-      });
-
-      return res.status(400).json({ errors: ValidationErrors });
-    }
-
     try {
       const { nome, descricao, preco } = req.body;
       const newPlano = await Plano.create({ nome, descricao, preco });
@@ -52,21 +41,6 @@ class PlanoController {
   };
 
   updatePlano = async (req: Request, res: Response) => {
-    let isValidBody: PlanoAttributes | undefined = undefined;
-    try {
-      isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-    } catch (err) {
-      const yupError = err as yup.ValidationError;
-      const ValidationErrors: Record<string, string> = {};
-
-      yupError.inner.forEach(error => {
-        if (error.path === undefined) return;
-        ValidationErrors[error.path] = error.message;
-      });
-
-      return res.status(400).json({ errors: ValidationErrors });
-    }
-
     try {
       const { id } = req.params;
       const { nome, descricao, preco } = req.body;

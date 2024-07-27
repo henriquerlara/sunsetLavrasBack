@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import HorariosOcupados from "../models/horariosOcupados";
 import * as yup from "yup";
+import { bodyValidator } from '../shared/middleware/validations'
 
 // Definir a interface para validação
 interface HorarioOcupadoAttributes {
@@ -9,41 +10,30 @@ interface HorarioOcupadoAttributes {
     idQuadra: number;
 }
 
-const bodyValidation: yup.ObjectSchema<HorarioOcupadoAttributes> = yup.object().shape({
-    data: yup.string()
-      .matches(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
-      .required(),
-    horario: yup.string()
-      .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Horário deve estar no formato HH:mm')
-      .required(),
-    idQuadra: yup.number().required()
-  });
+export const horariosOcupadosValidation = bodyValidator((getSchema) => ({
+    body: getSchema<HorarioOcupadoAttributes>(yup.object().shape({
+        data: yup.string()
+            .matches(/^\d{4}-\d{2}-\d{2}$/, 'Data deve estar no formato YYYY-MM-DD')
+            .required(),
+        horario: yup.string()
+            .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Horário deve estar no formato HH:mm')
+            .required(),
+        idQuadra: yup.number().required()
+    }))
+}));
+
+
 
 class HorarioOcupadoController {
     createHorarioOcupado = async (req: Request, res: Response) => {
-        let isValidBody: HorarioOcupadoAttributes | undefined = undefined;
         try {
-            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-        } catch (err) {
-            const yupError = err as yup.ValidationError;
-            const ValidationErrors: Record<string, string> = {};
-
-            yupError.inner.forEach(error => {
-                if (error.path === undefined) return;
-                ValidationErrors[error.path] = error.message;
-            });
-
-            return res.status(400).json({ errors: ValidationErrors });
-        }
-
-        try {
-            const { data, horario, idQuadra } = isValidBody;
+            const { data, horario, idQuadra } = req.body;
             const newHorarioOcupado = await HorariosOcupados.create({ data, horario, idQuadra });
             res.status(201).json(newHorarioOcupado);
-          } catch (error) {
+        } catch (error) {
             console.error('Error creating horario ocupado:', error);
             res.status(500).json({ error: 'Internal Server Error' });
-          }
+        }
     };
 
     deleteHorarioOcupado = async (req: Request, res: Response) => {
@@ -100,24 +90,9 @@ class HorarioOcupadoController {
     };
 
     updateHorarioOcupado = async (req: Request, res: Response) => {
-        let isValidBody: HorarioOcupadoAttributes | undefined = undefined;
-        try {
-            isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-        } catch (err) {
-            const yupError = err as yup.ValidationError;
-            const ValidationErrors: Record<string, string> = {};
-
-            yupError.inner.forEach(error => {
-                if (error.path === undefined) return;
-                ValidationErrors[error.path] = error.message;
-            });
-
-            return res.status(400).json({ errors: ValidationErrors });
-        }
-
         try {
             const { id } = req.params;
-            const { data, horario, idQuadra } = isValidBody;
+            const { data, horario, idQuadra } = req.body;
             const horarioOcupado = await HorariosOcupados.findByPk(id);
 
             if (!horarioOcupado) {

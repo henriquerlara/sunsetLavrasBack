@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/usuario';
 import * as yup from 'yup';
+import { bodyValidator } from '../shared/middleware/validations'
 
 interface UsuarioAttributes {
   nome: string;
@@ -19,21 +20,6 @@ const bodyValidation: yup.ObjectSchema<UsuarioAttributes> = yup.object().shape({
 });
 
 export const createUser = async (req: Request, res: Response) => {
-  let isValidBody: UsuarioAttributes | undefined = undefined;
-  try {
-    isValidBody = await bodyValidation.validate(req.body, { abortEarly: false });
-  } catch (err) {
-    const yupError = err as yup.ValidationError;
-    const ValidationErrors: Record<string, string> = {};
-
-    yupError.inner.forEach(error => {
-      if (error.path === undefined) return;
-      ValidationErrors[error.path] = error.message;
-    });
-
-    return res.status(400).json({ errors: ValidationErrors });
-  }
-
   try {
     const { nome, email, senha, cpf, telefone } = req.body;
     const newUser = await User.create({ nome, email, senha, cpf, telefone });
