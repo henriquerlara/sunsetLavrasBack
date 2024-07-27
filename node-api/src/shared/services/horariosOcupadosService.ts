@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import horariosOcupados from "../../models/horariosOcupados";
+import HorariosOcupados from "../../models/horariosOcupados";
 
 class HorariosOcupadosService {
   getHorariosOcupados = async (req: Request, res: Response) => {
