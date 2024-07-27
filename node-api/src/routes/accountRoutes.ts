@@ -1,10 +1,13 @@
 import { Router, Request, Response } from 'express';
-import { authenticate } from '../shared/middleware/auth';
 
 const router = Router();
 
 router.get('/account', (req: Request, res: Response) => {
-  res.json({ user: req.session.usuario });
+  if (req.session.usuario) {
+    res.json({ isAuthenticated: true, user: req.session.usuario });
+  } else {
+    res.status(401).json({ isAuthenticated: false, message: 'Not authenticated' });
+  }
 });
 
 export default router;

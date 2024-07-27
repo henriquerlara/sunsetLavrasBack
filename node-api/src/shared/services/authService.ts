@@ -8,12 +8,12 @@ export const login = async (req: Request, res: Response) => {
   try {
     const usuario = await Usuario.findOne({ where: { email } });
     if (usuario && await bcrypt.compare(senha, usuario.senha)) {
-      req.session.usuario = { cpf: usuario.cpf, nome: usuario.nome, email: usuario.email, senha: usuario.senha, telefone: usuario.telefone }; // Armazena informações do usuário na sessão
-      res.json({ message: 'Login successful', usuario: { cpf: usuario.cpf, nome: usuario.nome, email: usuario.email, telefone: usuario.telefone } });
+      req.session.usuario = { cpf: usuario.cpf, nome: usuario.nome, senha: usuario.senha, email: usuario.email, telefone: usuario.telefone }; // Armazena informações do usuário na sessão
+      res.json({ success: true, message: 'Login successful', usuario: { cpf: usuario.cpf, nome: usuario.nome, email: usuario.email, telefone: usuario.telefone } });
     } else {
-      res.status(401).json({ error: 'Invalcpf credentials' });
+      res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };
