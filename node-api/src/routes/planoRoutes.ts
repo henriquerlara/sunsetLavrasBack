@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import PlanoController, { planoValidation } from '../controllers/planoController'
 import PlanoService from '../shared/services/planoService';
-import { authenticateUser } from 'shared/middleware/auth';
+import { authenticateUser } from '../shared/middleware/auth';
 
 const router = Router();
 
