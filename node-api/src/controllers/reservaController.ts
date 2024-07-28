@@ -10,7 +10,7 @@ interface ReservaAttributes {
     dataInicio: Date;
     dataFim: Date;
     idPlano: number;
-    cpfUsuario: string;
+    idUsuario: string;
     idQuadra: number;
 }
 
@@ -19,7 +19,7 @@ export const reservaValidation = bodyValidator((getSchema) => ({
         dataInicio: yup.date().required(),
         dataFim: yup.date().required(),
         idPlano: yup.number().required(),
-        cpfUsuario: yup.string().required(),
+        idUsuario: yup.string().required(),
         idQuadra: yup.number().required()
     }))
 }));
@@ -28,8 +28,9 @@ export const reservaValidation = bodyValidator((getSchema) => ({
 class ReservaController {
     createReserva = async (req: Request, res: Response) => {
         try {
-            const { dataInicio, dataFim, idPlano, cpfUsuario, idQuadra } = req.body;
-            const newReserva = await Reserva.create({ dataInicio, dataFim, idPlano, cpfUsuario, idQuadra });
+            const { dataInicio, dataFim, idPlano, idUsuario, idQuadra } = req.body;
+            const newReserva = await Reserva.create({ dataInicio, dataFim, idPlano, idUsuario, idQuadra });
+
             res.status(201).json(newReserva);
         } catch (error) {
             console.error('Error creating reserva:', error);
@@ -59,7 +60,7 @@ class ReservaController {
     updateReserva = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { dataInicio, dataFim, idPlano, cpfUsuario, idQuadra } = req.body;
+            const { dataInicio, dataFim, idPlano, idUsuario, idQuadra } = req.body;
             const reserva = await Reserva.findByPk(id);
 
             if (!reserva) {
@@ -70,7 +71,7 @@ class ReservaController {
             reserva.dataInicio = dataInicio;
             reserva.dataFim = dataFim;
             reserva.idPlano = idPlano;
-            reserva.cpfUsuario = cpfUsuario;
+            reserva.idUsuario = idUsuario;
             reserva.idQuadra = idQuadra;
             await reserva.save();
 

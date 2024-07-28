@@ -9,7 +9,7 @@ class Reserva extends Model {
   public dataInicio!: Date;
   public dataFim!: Date;
   public idPlano!: number;
-  public cpfUsuario!: number;
+  public idUsuario!: number;
   public idQuadra!: number;
 }
 

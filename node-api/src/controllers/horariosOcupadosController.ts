@@ -27,8 +27,8 @@ export const horariosOcupadosValidation = bodyValidator((getSchema) => ({
 class HorarioOcupadoController {
     createHorarioOcupado = async (req: Request, res: Response) => {
         try {
-            const { data, horario, idQuadra } = req.body;
-            const newHorarioOcupado = await HorariosOcupados.create({ data, horario, idQuadra });
+            const { data, horario, idQuadra, idUsuario } = req.body;
+            const newHorarioOcupado = await HorariosOcupados.create({ data, horario, idQuadra, idUsuario });
             res.status(201).json(newHorarioOcupado);
         } catch (error) {
             console.error('Error creating horario ocupado:', error);
@@ -68,31 +68,10 @@ class HorarioOcupadoController {
         }
     };
 
-    getHorarioOcupado = async (req: Request, res: Response) => {
-        try {
-            const { id } = req.params;
-            if (!id || isNaN(Number(id))) {
-                res.status(400).json({ error: 'ID is required or is not valid' });
-                return;
-            }
-            const horarioOcupado = await HorariosOcupados.findByPk(id);
-
-            if (!horarioOcupado) {
-                res.status(404).json({ error: 'Horario ocupado not found' });
-                return;
-            }
-
-            res.status(200).json(horarioOcupado);
-        } catch (error) {
-            console.error('Error getting horario ocupado:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    };
-
     updateHorarioOcupado = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { data, horario, idQuadra } = req.body;
+            const { data, horario, idQuadra, idUsuario } = req.body;
             const horarioOcupado = await HorariosOcupados.findByPk(id);
 
             if (!horarioOcupado) {
@@ -103,6 +82,7 @@ class HorarioOcupadoController {
             horarioOcupado.data = data;
             horarioOcupado.horario = horario;
             horarioOcupado.idQuadra = idQuadra;
+            horarioOcupado.idUsuario = idUsuario;
             await horarioOcupado.save();
 
             res.status(200).json(horarioOcupado);

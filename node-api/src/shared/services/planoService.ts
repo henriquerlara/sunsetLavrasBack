@@ -8,7 +8,7 @@ class PlanoService {
       if (!id || isNaN(Number(id))) {
         res.status(400).json({ error: 'ID is required or is not valid' });
         return;
-    }
+      }
       const planos = await Plano.findAll({
         where: {
           idUsuario: id
