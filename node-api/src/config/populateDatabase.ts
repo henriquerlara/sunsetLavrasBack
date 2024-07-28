@@ -51,7 +51,7 @@ const populateDatabase = async () => {
       dataInicio: new Date(),
       dataFim: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hora depois
       idPlano: plano.id,
-      cpfUsuario: usuario.cpf,
+      idUsuario: usuario.id,
       idQuadra: quadra.id
     });
 
@@ -59,7 +59,8 @@ const populateDatabase = async () => {
     const horariosOcupados = await HorariosOcupados.create({
       data: '2021-12-31',
       horario: '12:00',
-      idQuadra: quadra.id
+      idQuadra: quadra.id,
+      idUsuario: usuario.id
     });
 
     console.log('Database populated with example data.');

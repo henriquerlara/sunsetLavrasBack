@@ -36,12 +36,12 @@ Reserva.init(
         key: "id"
       }
     },
-    cpfUsuario: {
-      type: DataTypes.CHAR(14),
+    idUsuario: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Usuario,
-        key: "cpf"
+        key: "id"
       }
     },
     idQuadra: {
@@ -71,8 +71,8 @@ Reserva.belongsTo(Plano, {
 });
 
 Reserva.belongsTo(Usuario, {
-  foreignKey: "cpfUsuario",
-  targetKey: "cpf",
+  foreignKey: "idUsuario",
+  targetKey: "id",
   as: "usuario",
   onDelete: "CASCADE",
   onUpdate: "NO ACTION"

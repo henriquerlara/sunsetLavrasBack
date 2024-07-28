@@ -3,6 +3,7 @@ import sequelize from '../config/database';
 import bcrypt from 'bcryptjs';
 
 class Usuario extends Model {
+  public id!: number;
   public cpf!: string;
   public nome!: string;
   public email!: string;
@@ -16,10 +17,15 @@ class Usuario extends Model {
 }
 
 Usuario.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   cpf: {
     type: DataTypes.CHAR(14),
     allowNull: false,
-    primaryKey: true
+    unique: true
   },
   nome: {
     type: DataTypes.STRING(60),

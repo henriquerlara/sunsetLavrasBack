@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCheckoutSession } from '../controllers/stripeController';
+import { createCheckoutSession } from '../shared/services/stripe';
 
 const router = Router();
 

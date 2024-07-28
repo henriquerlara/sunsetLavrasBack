@@ -8,8 +8,8 @@ export const login = async (req: Request, res: Response) => {
   try {
     const usuario = await Usuario.findOne({ where: { email } });
     if (usuario && await bcrypt.compare(senha, usuario.senha)) {
-      req.session.usuario = { cpf: usuario.cpf, nome: usuario.nome, senha: usuario.senha, email: usuario.email, telefone: usuario.telefone }; // Armazena informações do usuário na sessão
-      res.json({ success: true, message: 'Login successful', usuario: { cpf: usuario.cpf, nome: usuario.nome, email: usuario.email, telefone: usuario.telefone } });
+      req.session.usuario = { id: usuario.id, cpf: usuario.cpf, nome: usuario.nome, senha: usuario.senha, email: usuario.email, telefone: usuario.telefone }; // Armazena informações do usuário na sessão
+      res.json({ success: true, message: 'Login successful', usuario: { id: usuario.id, cpf: usuario.cpf, nome: usuario.nome, email: usuario.email, telefone: usuario.telefone } });
     } else {
       res.status(401).json({ success: false, error: 'Invalid credentials' });
     }

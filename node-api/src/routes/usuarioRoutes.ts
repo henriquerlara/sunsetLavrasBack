@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { createUser, getUsers, usuarioValidation } from "../controllers/usuarioController";
-import { authenticate } from "../shared/middleware/auth";
+import { authenticateUser } from "../shared/middleware/auth";
 
 declare global {
   namespace Express {
