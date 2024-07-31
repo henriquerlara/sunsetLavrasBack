@@ -9,6 +9,8 @@ class HorariosOcupados extends Model {
   public horario!: string; // Formato HH:mm
   public idQuadra!: number;
   public idUsuario!: number;
+  public temporario!: boolean; // Novo campo para indicar se o bloqueio é temporário
+  public expiresAt!: Date; // Campo para indicar o tempo de expiração
 }
 
 HorariosOcupados.init({
@@ -40,6 +42,15 @@ HorariosOcupados.init({
       model: Usuario,
       key: 'id'
     }
+  },
+  temporario: { // Campo para indicar se o bloqueio é temporário
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  expiresAt: { // Campo para indicar o tempo de expiração
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   sequelize,
@@ -50,19 +61,19 @@ HorariosOcupados.init({
 });
 
 HorariosOcupados.belongsTo(Quadra, {
-    foreignKey: 'idQuadra',
-    targetKey: 'id',
-    as: 'quadra',
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION'
+  foreignKey: 'idQuadra',
+  targetKey: 'id',
+  as: 'quadra',
+  onDelete: 'NO ACTION',
+  onUpdate: 'NO ACTION'
 });
 
 HorariosOcupados.belongsTo(Usuario, {
-    foreignKey: 'idUsuario',
-    targetKey: 'id',
-    as: 'usuario',
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION'
+  foreignKey: 'idUsuario',
+  targetKey: 'id',
+  as: 'usuario',
+  onDelete: 'NO ACTION',
+  onUpdate: 'NO ACTION'
 });
 
 export default HorariosOcupados;

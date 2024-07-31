@@ -1,0 +1,12 @@
+# Sistema operacional e arquivos específicos do ambiente
+.DS_Store
+Thumbs.db
+
+# Diretórios de dependências
+node_modules
+
+# Diretórios de build
+dist/
+build/
+
+

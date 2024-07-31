@@ -4,8 +4,13 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import sequelize from './config/database';
 import router from './routes/allRoutes';
+import { handleStripeWebhook } from './shared/services/stripe';
+import rawBodyMiddleware from './shared/middleware/rawBodyMiddleware'; // Import the custom middleware
 
 const app = express();
+
+// Use the rawBodyMiddleware for the Stripe webhook route
+app.post('/stripe/webhook', rawBodyMiddleware, handleStripeWebhook);
 
 // Middleware e rotas
 app.use(express.json());
@@ -19,9 +24,11 @@ app.use(cors({
 app.use(session({
   secret: 'secret key',   // Chave secreta para assinar o ID da sessão
   resave: false,               // Evita que a sessão seja salva novamente se não houver modificações
-  saveUninitialized: true,    // Só salva sessões que foram inicializadas
+  saveUninitialized: false,    // Só salva sessões que foram inicializadas
   cookie: { secure: false }    // Configurações do cookie de sessão (deve ser true em produção com HTTPS)
 }));
+
+app.use(express.json());
 
 app.use(router);
 

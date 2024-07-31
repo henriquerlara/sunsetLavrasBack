@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+import HorariosOcupados from '../../models/horariosOcupados';
 
 dotenv.config();
 
@@ -9,38 +10,139 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
-  const { date, hours, court } = req.body;
+  const { date, hours, court, userId } = req.body;
 
-  console.log('Request body:', req.body); // Log do corpo da requisição
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
 
   try {
+    // Verificar disponibilidade de horários
+    for (const hour of hours) {
+      const existingReservation = await HorariosOcupados.findOne({
+        where: {
+          data: date,
+          horario: hour,
+          idQuadra: court,
+        },
+      });
+
+      if (existingReservation) {
+        return res.status(400).json({ error: `Horário ${hour} no dia ${date} para a quadra ${court} já está reservado.` });
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: hours.map((hour: string) => ({
         price_data: {
-          currency: 'brl', // Alterar para BRL
+          currency: 'brl',
           product_data: {
             name: `Quadra ${court} no dia ${date} às ${hour}`,
           },
-          unit_amount: 8000, // Valor em centavos (R$ 80.00)
+          unit_amount: 8000,
         },
         quantity: 1,
       })),
       mode: 'payment',
+      metadata: {
+        date: date || '',
+        hours: hours ? JSON.stringify(hours) : '',
+        court: court ? court.toString() : '',
+        userId: userId.toString(), // Ensure userId is passed as string
+      },
       success_url: `${process.env.CLIENT_URL}/success`,
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
     });
 
-    console.log('Stripe session created:', session); // Log da sessão criada
-
     res.json({ id: session.id });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error creating Stripe session:', error.message); // Log do erro
-      res.status(500).json({ error: error.message });
-    } else {
-      console.error('Unknown error occurred:', error); // Log do erro desconhecido
-      res.status(500).json({ error: 'Unknown error occurred' });
+  } catch (error: any) {
+    console.error('Error creating Stripe session:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const handleStripeWebhook = async (req: Request, res: Response) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+  let event: Stripe.Event;
+
+  try {
+    const rawBody = (req as any).rawBody;
+    console.log('Raw body in webhook handler:', rawBody);
+    console.log('Signature in webhook handler:', sig);
+
+    event = stripe.webhooks.constructEvent(rawBody, sig!, endpointSecret);
+  } catch (err: any) {
+    console.error('Error verifying webhook signature:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const metadata = session.metadata;
+
+    console.log('Metadata in session:', metadata);
+
+    if (!metadata) {
+      console.error('No metadata found in session');
+      return res.status(400).send('No metadata found in session');
+    }
+
+    const { date, hours, court, userId } = metadata;
+
+    if (!date) {
+      console.error('Date is missing in metadata');
+      return res.status(400).send('Date is missing in metadata');
+    }
+    if (!hours) {
+      console.error('Hours are missing in metadata');
+      return res.status(400).send('Hours are missing in metadata');
+    }
+    if (!court) {
+      console.error('Court is missing in metadata');
+      return res.status(400).send('Court is missing in metadata');
+    }
+    if (!userId) {
+      console.error('UserId is missing in metadata');
+      return res.status(400).send('UserId is missing in metadata');
+    }
+
+    console.log('date:', date);
+    console.log('hours:', hours);
+    console.log('court:', court);
+    console.log('userId:', userId);
+
+    try {
+      const hoursArray = JSON.parse(hours);
+      for (const hour of hoursArray) {
+        const existingReservation = await HorariosOcupados.findOne({
+          where: {
+            data: date,
+            horario: hour,
+            idQuadra: parseInt(court, 10),
+          },
+        });
+
+        if (existingReservation) {
+          console.error(`Horário já reservado: ${hour} na data: ${date} para a quadra: ${court}`);
+          throw new Error(`Horário já reservado: ${hour} na data: ${date} para a quadra: ${court}`);
+        }
+
+        await HorariosOcupados.create({
+          data: date,
+          horario: hour,
+          idQuadra: parseInt(court, 10),
+          idUsuario: parseInt(userId, 10),
+        });
+      }
+      console.log('Reservation confirmed for session:', session.id);
+    } catch (error: any) {
+      console.error('Error confirming reservation:', error.message);
+      return res.status(400).send(`Webhook Error: ${error.message}`);
     }
   }
+
+  res.status(200).json({ received: true });
 };
