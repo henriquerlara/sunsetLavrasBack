@@ -57,7 +57,13 @@ HorariosOcupados.init({
   modelName: 'HorariosOcupados',
   tableName: 'HorariosOcupados',
   schema: 'SunsetArena',
-  timestamps: false // Desativa createdAt e updatedAt
+  timestamps: false, // Desativa createdAt e updatedAt
+  indexes: [
+    {
+      unique: true,
+      fields: ['data', 'horario', 'idQuadra']
+    }
+  ]
 });
 
 HorariosOcupados.belongsTo(Quadra, {

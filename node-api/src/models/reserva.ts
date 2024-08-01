@@ -6,8 +6,7 @@ import Quadra from "./quadra";
 
 class Reserva extends Model {
   public id!: number;
-  public dataInicio!: Date;
-  public dataFim!: Date;
+  public dias!: string[][];
   public idPlano!: number;
   public idUsuario!: number;
   public idQuadra!: number;
@@ -20,12 +19,8 @@ Reserva.init(
       autoIncrement: true,
       primaryKey: true
     },
-    dataInicio: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    dataFim: {
-      type: DataTypes.DATE,
+    dias: {
+      type: DataTypes.ARRAY(DataTypes.BOOLEAN),
       allowNull: false
     },
     idPlano: {

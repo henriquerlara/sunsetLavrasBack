@@ -7,29 +7,37 @@ import * as yup from 'yup';
 import { bodyValidator } from '../shared/middleware/validations'
 
 interface ReservaAttributes {
-    dataInicio: Date;
-    dataFim: Date;
+    dias: string[][]; // armazena guarda o horario para cada dia da semana
     idPlano: number;
     idUsuario: string;
     idQuadra: number;
-}
-
-export const reservaValidation = bodyValidator((getSchema) => ({
+  }
+  
+  export const reservaValidation = bodyValidator((getSchema) => ({
     body: getSchema<ReservaAttributes>(yup.object().shape({
-        dataInicio: yup.date().required(),
-        dataFim: yup.date().required(),
-        idPlano: yup.number().required(),
-        idUsuario: yup.string().required(),
-        idQuadra: yup.number().required()
+        dias: yup.array()
+        .of(
+            yup.array().of(
+                yup.string()
+                    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Horário deve estar no formato HH:mm')
+                    .length(5, 'Horário deve ter exatamente 5 caracteres')
+                    .required()
+            )
+        )
+        .length(7, 'dias deve conter exatamente 7 elementos')
+        .required('dias é obrigatório') as yup.Schema<string[][]>,
+    idPlano: yup.number().required('idPlano é obrigatório'),
+    idUsuario: yup.string().required('idUsuario é obrigatório'),
+    idQuadra: yup.number().required('idQuadra é obrigatório')
     }))
-}));
+  }));
 
 
 class ReservaController {
     createReserva = async (req: Request, res: Response) => {
         try {
-            const { dataInicio, dataFim, idPlano, idUsuario, idQuadra } = req.body;
-            const newReserva = await Reserva.create({ dataInicio, dataFim, idPlano, idUsuario, idQuadra });
+            const { dias, idPlano, idUsuario, idQuadra } = req.body;
+            const newReserva = await Reserva.create({ dias, idPlano, idUsuario, idQuadra });
 
             res.status(201).json(newReserva);
         } catch (error) {
@@ -60,7 +68,7 @@ class ReservaController {
     updateReserva = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { dataInicio, dataFim, idPlano, idUsuario, idQuadra } = req.body;
+            const { dias, idPlano, idUsuario, idQuadra } = req.body;
             const reserva = await Reserva.findByPk(id);
 
             if (!reserva) {
@@ -68,8 +76,7 @@ class ReservaController {
                 return;
             }
 
-            reserva.dataInicio = dataInicio;
-            reserva.dataFim = dataFim;
+            reserva.dias = dias
             reserva.idPlano = idPlano;
             reserva.idUsuario = idUsuario;
             reserva.idQuadra = idQuadra;
