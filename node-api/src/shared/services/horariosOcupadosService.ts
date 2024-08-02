@@ -6,9 +6,9 @@ import { addWeeks, addDays, format } from 'date-fns';
 
 class HorariosOcupadosService {
 
-  createHorariosOcupadosByReserva = async (req: Request, res: Response) => {
+  createHorariosOcupadosByReserva = async (dias: string[][], idPlano: number, idQuadra: string, idUsuario: number) => {
     try {
-      const { dias, idPlano, idUsuario, idQuadra } = req.body;
+      
       const semanasRecorrencia = idPlano === 0 ? 4 : 12; // Define a recorrência do plano
       const hoje = new Date();
   
@@ -35,11 +35,8 @@ class HorariosOcupadosService {
           }
         }
       }
-  
-      res.status(201).json({ message: "Horários criados com sucesso!" });
     } catch (error) {
-      console.error("Error creating horario:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      throw new Error('Error creating horarios ocupados by reserva');
     }
   };
 

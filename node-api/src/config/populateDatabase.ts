@@ -46,10 +46,19 @@ const populateDatabase = async () => {
       telefone: '1234567890'
     });
 
+    const dias: string[][] = [
+      ['10:00', '14:00'], // Segunda-feira
+      ['09:00', '15:00', '17:00'], // Terça-feira
+      [], // Quarta-feira
+      ['11:00'], // Quinta-feira
+      ['13:00', '16:00'], // Sexta-feira
+      ['08:00', '12:00', '18:00'], // Sábado
+      ['09:30', '11:30'] // Domingo
+    ];
+    
     // Populando a tabela Reserva
     const reserva = await Reserva.create({
-      dataInicio: new Date(),
-      dataFim: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hora depois
+      dias,
       idPlano: plano.id,
       idUsuario: usuario.id,
       idQuadra: quadra.id

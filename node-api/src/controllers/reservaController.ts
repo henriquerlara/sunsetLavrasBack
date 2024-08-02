@@ -5,6 +5,7 @@ import Usuario from '../models/usuario';
 import Plano from '../models/plano';
 import * as yup from 'yup';
 import { bodyValidator } from '../shared/middleware/validations'
+import horariosOcupadosService from '../shared/services/horariosOcupadosService';
 
 interface ReservaAttributes {
     dias: string[][]; // armazena guarda o horario para cada dia da semana
@@ -38,6 +39,7 @@ class ReservaController {
         try {
             const { dias, idPlano, idUsuario, idQuadra } = req.body;
             const newReserva = await Reserva.create({ dias, idPlano, idUsuario, idQuadra });
+            horariosOcupadosService.createHorariosOcupadosByReserva(dias, idPlano, idQuadra, idUsuario);
 
             res.status(201).json(newReserva);
         } catch (error) {

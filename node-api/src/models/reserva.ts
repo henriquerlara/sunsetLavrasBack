@@ -20,7 +20,7 @@ Reserva.init(
       primaryKey: true
     },
     dias: {
-      type: DataTypes.ARRAY(DataTypes.BOOLEAN),
+      type: DataTypes.JSONB,
       allowNull: false
     },
     idPlano: {
