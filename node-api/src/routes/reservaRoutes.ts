@@ -8,5 +8,6 @@ router.post('/reservas', reservaValidation, ReservaController.createReserva);
 router.get('/reservas', ReservaController.getReservas);
 router.put('/reservas/:id', reservaValidation, ReservaController.updateReserva);
 router.delete('/reservas/:id', ReservaController.deleteReserva);
+router.get('/reservas/:id', ReservaController.getReservaById);
 
 export default router;

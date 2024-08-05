@@ -111,6 +111,26 @@ class ReservaController {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
+    getReservaById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            if (!id || isNaN(Number(id))) {
+                res.status(400).json({ error: 'ID is required or is not valid' });
+                return;
+            }
+            const reserva = await Reserva.findByPk(id);
+
+            if (!reserva) {
+                res.status(404).json({ error: 'Reserva not found' });
+                return;
+            }
+
+            res.status(200).json(reserva);
+        } catch (error) {
+            console.error('Error getting reserva:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
 }
 
 export default new ReservaController();
