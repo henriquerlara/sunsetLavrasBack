@@ -40,7 +40,11 @@ HorariosOcupados.init({
       model: Usuario,
       key: 'id'
     }
+<<<<<<< Updated upstream
   }
+=======
+  },
+>>>>>>> Stashed changes
 }, {
   sequelize,
   modelName: 'HorariosOcupados',

@@ -10,15 +10,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
-  const { date, hours, court, userId } = req.body;
+  const { date, entries, userId } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ error: 'userId is required' });
+  if (!entries || !Array.isArray(entries) || !userId) {
+    return res.status(400).json({ error: 'Required parameters are missing or incorrect' });
   }
 
   try {
-    // Verificar disponibilidade de horários
-    for (const hour of hours) {
+    // Verificar disponibilidade de horários para cada entrada
+    for (const entry of entries) {
+      const { court, hour } = entry;
+
       const existingReservation = await HorariosOcupados.findOne({
         where: {
           data: date,
@@ -32,24 +34,26 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       }
     }
 
+    // Criar itens de linha para todas as combinações de quadras e horários
+    const lineItems = entries.map(({ court, hour }) => ({
+      price_data: {
+        currency: 'brl',
+        product_data: {
+          name: `Quadra ${court} no dia ${date} às ${hour}`,
+        },
+        unit_amount: 8000, // Aqui poderia ser ajustado para considerar descontos
+      },
+      quantity: 1,
+    }));
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: hours.map((hour: string) => ({
-        price_data: {
-          currency: 'brl',
-          product_data: {
-            name: `Quadra ${court} no dia ${date} às ${hour}`,
-          },
-          unit_amount: 8000,
-        },
-        quantity: 1,
-      })),
+      line_items: lineItems,
       mode: 'payment',
       metadata: {
         date: date || '',
-        hours: hours ? JSON.stringify(hours) : '',
-        court: court ? court.toString() : '',
-        userId: userId.toString(), // Ensure userId is passed as string
+        entries: JSON.stringify(entries) || '',
+        userId: userId.toString(),
       },
       success_url: `${process.env.CLIENT_URL}/success`,
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
@@ -90,19 +94,15 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
       return res.status(400).send('No metadata found in session');
     }
 
-    const { date, hours, court, userId } = metadata;
+    const { date, entries, userId } = metadata;
 
     if (!date) {
       console.error('Date is missing in metadata');
       return res.status(400).send('Date is missing in metadata');
     }
-    if (!hours) {
-      console.error('Hours are missing in metadata');
-      return res.status(400).send('Hours are missing in metadata');
-    }
-    if (!court) {
-      console.error('Court is missing in metadata');
-      return res.status(400).send('Court is missing in metadata');
+    if (!entries) {
+      console.error('Entries are missing in metadata');
+      return res.status(400).send('Entries are missing in metadata');
     }
     if (!userId) {
       console.error('UserId is missing in metadata');
@@ -110,13 +110,12 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     }
 
     console.log('date:', date);
-    console.log('hours:', hours);
-    console.log('court:', court);
+    console.log('entries:', entries);
     console.log('userId:', userId);
 
     try {
-      const hoursArray = JSON.parse(hours);
-      for (const hour of hoursArray) {
+      const entriesArray = JSON.parse(entries);
+      for (const { court, hour } of entriesArray) {
         const existingReservation = await HorariosOcupados.findOne({
           where: {
             data: date,
@@ -146,3 +145,4 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
 
   res.status(200).json({ received: true });
 };
+

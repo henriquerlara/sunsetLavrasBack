@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import HorariosOcupados from "../../models/horariosOcupados";
 import Quadra from "../../models/quadra";
+<<<<<<< Updated upstream
 import { Op } from 'sequelize';
 import { addWeeks, addDays, format } from 'date-fns';
 
@@ -72,9 +73,19 @@ class HorariosOcupadosService {
   checkAvailability = async (req: Request, res: Response) => {
     try {
       const { dates } = req.body;
+=======
+
+class HorariosOcupadosService {
+
+  checkAvailability = async (req: Request, res: Response) => {
+    try {
+        const { dates } = req.body;
+        console.log('Received dates:', dates);
+>>>>>>> Stashed changes
 
       const unavailableTimes: { [key: number]: string[] } = {};
 
+<<<<<<< Updated upstream
       for (const date of dates) {
         const horarios = await HorariosOcupados.findAll({
           where: {
@@ -89,15 +100,43 @@ class HorariosOcupadosService {
           if (!unavailableTimes[horario.idQuadra].includes(horario.horario)) {
             unavailableTimes[horario.idQuadra].push(horario.horario);
           }
+=======
+        for (const date of dates) {
+            const formattedDate = new Date(date).toISOString().split('T')[0]; // Remove time part
+            console.log(`Checking availability for date: ${formattedDate}`);
+
+            const horarios = await HorariosOcupados.findAll({
+                where: {
+                    data: formattedDate
+                }
+            });
+
+            console.log(`Horários ocupados para ${formattedDate}:`, horarios);
+
+            for (const horario of horarios) {
+                if (!unavailableTimes[horario.idQuadra]) {
+                    unavailableTimes[horario.idQuadra] = [];
+                }
+                if (!unavailableTimes[horario.idQuadra].includes(horario.horario)) {
+                    unavailableTimes[horario.idQuadra].push(horario.horario);
+                }
+            }
+>>>>>>> Stashed changes
         }
       }
 
+<<<<<<< Updated upstream
       res.status(200).json({ unavailableTimes });
+=======
+        console.log('Unavailable times:', unavailableTimes);
+        res.status(200).json({ unavailableTimes });
+>>>>>>> Stashed changes
     } catch (error) {
       console.error('Error checking availability:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
+
 
   getHorariosOcupadosbyDateAndQuadraId = async (req: Request, res: Response) => {
     try {

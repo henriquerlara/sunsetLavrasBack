@@ -22,9 +22,9 @@ app.use(cors({
 }));
 
 app.use(session({
-  secret: 'secret key',   // Chave secreta para assinar o ID da sessão
+  secret: 'teste',   // Chave secreta para assinar o ID da sessão
   resave: false,               // Evita que a sessão seja salva novamente se não houver modificações
-  saveUninitialized: false,    // Só salva sessões que foram inicializadas
+  saveUninitialized: true,    // Só salva sessões que foram inicializadas
   cookie: { secure: false }    // Configurações do cookie de sessão (deve ser true em produção com HTTPS)
 }));
 
